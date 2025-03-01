@@ -1,0 +1,52 @@
+class Background {
+
+  //variabler i classen
+  PImage background;
+  PImage background2;
+  int x;
+  int y2;
+  int y1;
+  int mY;
+
+  Background() {
+    //der laves to vej billeder, som bliver sat til den samme størrelse, men med to forskellige y værdiger
+    background = loadImage("Background.png");
+    background2 = loadImage("Background.png");
+    background.resize(width, 650);
+    background2.resize(width, 650);
+    //koordinaterne for vej billederne
+    x = 0;
+    y1 = 0;
+    y2 = -650;
+    //mY er farten vejen køre
+    mY = 5;
+  }
+
+  void run() {
+    //her bevæger billedet sig ned af, indtil det er ude af vinduet, så kommer det tilbage til toppen igen
+    imageMode(CORNER);
+    image(background, x, y1);
+    //baggrunden bevæger sig ned af, med mY som hastighed.
+    this.y1 += mY;
+    //hvis baggrunden når ud af vinduet, bliver det sat tilbage til starten
+    if (this.y1 >= height) {
+      this.y1 = y2-(650-mY);
+    }
+    image(background2, x, y2);
+    //baggrunden bevæger sig ned af, med mY som hastighed.
+    this.y2 += mY;
+    //hvis baggrunden når ud af vinduet, bliver det sat tilbage til starten
+    if (this.y2 >= height) {
+      this.y2 = y1-(650-mY);
+    }
+  }
+
+  void hit() {
+    //farten stopper, når en bil bliver ramt
+    mY = 0;
+  }
+  void reset() {
+    //farten bliver sat tilbage til start hastigheden, når at spillet bliver restartet.
+    mY = 5;
+  }
+}
