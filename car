@@ -1,0 +1,96 @@
+class Car {
+
+  //variabler til classen
+  float x1;
+  float y1;
+  float x2;
+  float y2;
+  float hitbox1x1;
+  float hitbox1x2;
+  float hitbox1y1;
+  float hitbox1y2;
+  float hitbox2x1;
+  float hitbox2x2;
+  float hitbox2y1;
+  float hitbox2y2;
+  int startX;
+  int startY;
+  PImage car1;
+  PImage car2;
+  int running;
+
+  Car() {
+    //her loader den billederne af bilerne og gør dem den samme størelse
+    //samt at give dem de samme start potitioner
+    car1 = loadImage("tiny car 2.png");
+    car1.resize(width/18, height/12);
+    car2 = loadImage("tiny car 2.png");
+    car2.resize(width/18, height/12);
+    startX = width/2;
+    startY = (height/4*3);
+    this.x1 = startX;
+    this.y1 = startY;
+    this.x2 = startX;
+    this.y2 = startY;
+    //running bliver brugt til at indikeret hvornår spillet er igang
+    running = 1;
+  }
+
+  void car1() {
+    //her bliver billedet af bilen lavet
+    imageMode(CENTER);
+    image(car1, x1, y1);
+    if (running == 1) {
+      this.x1 = actualValueP1;
+    }
+    //her bliver parameterne sat for at bilen ikke kan køre ud over kanterne.
+    //dette er blot en sikkerhedforstaltning, da potentiometeret er mappet til ikke at kunne gå ud over kanten
+    if (x1 < width/6) this.x1 = width/6;
+    if (x1 > width/6*5) this.x1 = width/6*5;
+  }
+
+
+  void car2() {
+    //her bliver billedet af bilen lavet
+    imageMode(CENTER);
+    image(car2, x2, y2);
+    if (running == 1) {
+      this.x2 = actualValueP2;
+    }
+    //her bliver parameterne sat for at bilen ikke kan køre ud over kanterne.
+    //dette er blot en sikkerhedforstaltning, da potentiometeret er mappet til ikke at kunne gå ud over kanten
+    if (x2 < width/6) this.x2 = width/6;
+    if (x2 > width/6*5) this.x2 = width/6*5;
+  }
+
+  void car1Hitbox() {
+    //denne funktion blev brugt til at finde hitboxen på bilen
+    noFill();
+    hitbox1x1 = x1-width/36;
+    hitbox1x2 = x1+width/36;
+    hitbox1y1 = y1-height/24;
+    hitbox1y2 = y1+height/24;
+    //her tegnes en fikant rundt om bilen, for at kunne se om koden, passede med størrelsen på bilen.
+    quad(x1-width/36, y1-height/24, x1+width/36, y1-height/24, x1+width/36, y1+height/24, x1-width/36, y1+height/24);
+  }
+  void car2Hitbox() {
+    //denne funktion blev brugt til at finde hitboxen på den anden bil
+    noFill();
+    hitbox2x1 = x2-width/36;
+    hitbox2x2 = x2+width/36;
+    hitbox2y1 = y2-height/24;
+    hitbox2y2 = y2+height/24;
+    //her tegnes en fikant rundt om bilen, for at kunne se om koden, passede med størrelsen på bilen.
+    quad(x2-width/36, y2-height/24, x2+width/36, y2-height/24, x2+width/36, y2+height/24, x2-width/36, y2+height/24);
+  }
+  void hit() {
+    //hit() er til når bilen bliver ramt. så stopper spillet, og bilen kan ikke bevæge sig når spillet er stoppet.
+    running = 0;
+  }
+  void reset() {
+    //reset() bruges til at starte spillet igen.
+    running = 1;
+    x1 = this.startX;
+    x2 = this.startX;
+  }
+}
