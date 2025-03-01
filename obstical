@@ -1,0 +1,62 @@
+class Obstical {
+  //variabler for classen
+  PImage trash;
+  float x;
+  float y;
+  float startX;
+  float startY;
+  float mY;
+  float hitboxX1;
+  float hitboxX2;
+  float hitboxY1;
+  float hitboxY2;
+
+  Obstical() {
+    //her loades billedet af forhindringen og gøre den rigtige størrelse
+    trash = loadImage("trash.png");
+    trash.resize(width/12, height/12);
+    //her angives dens start position, som er tilfældige.
+    startX = random(width/6, width/6*5);
+    startY = random(-30, -70);
+    this.x = startX;
+    this.y = startY;
+    //farten på forhindringen.
+    mY = 5;
+  }
+
+  void spawnTrash() {
+    //her bliver billedet af forhindringen lavet.
+    imageMode(CENTER);
+    image(trash, x, y);
+    //det bevæger sig altid ned af.
+    this.y += mY;
+    //indtil det når ud af vinduet, så kommer det tilbage op til starten.
+    if (y > height+height/18) {
+      this.y = startY;
+      //x ændre sig hver gang, så at den ikke kommer ned det samme sted hver gang.
+      this.x = random(width/6, width/6*5);
+    }
+  }
+
+  void trashHitbox() {
+    noFill();
+    //denne funktion blev brugt til at finde hitboxen på forhindringen.
+    hitboxX1 = x-width/24;
+    hitboxX2 = x+width/24;
+    hitboxY1 = y-height/24;
+    hitboxY2 = y+height/24;
+    //her tegnes en fikant rundt om forhindringen, for at kunne se om koden, passede med størrelsen på forhindringen.
+    quad(x-width/24, y-height/24, x+width/24, y-height/24, x+width/24, y+height/24, x-width/24, y+height/24);
+  }
+
+  void hit() {
+    //når spillet stopper, sætter den hastiheden til nul
+    mY = 0;
+  }
+  void reset() {
+    //når spillet starter igen, starter forhindringen fra toppen og bevæger sig igen
+    mY = 5;
+    this.y = startY;
+    this.x = random(width/6, width/6*5);
+  }
+}
