@@ -1,0 +1,33 @@
+int butP1Val; //button Player 1
+int potP1Val; //potentiometer Player 1
+int potP2Val; //potentiometer Player 2
+
+void setup()
+{
+//initialize serial communications at a 9600 buffer rate
+Serial.begin(9600);
+pinMode(3,INPUT_PULLUP);
+}
+
+void loop(){
+int potP1Val = analogRead(A1); 
+int potP2Val = analogRead(A0);
+int butP1Val = digitalRead(3);
+//definerer hvilke pins de er tilsat
+
+potP1Val = constrain(map(potP1Val,200,1000,0,255),0,255); 
+potP2Val = constrain(map(potP2Val,200,1000,0,255),0,255);
+//Bestemmer at værdien kan gå fra 0 til højest 255 
+//(minimum og makisimum)
+
+Serial.print(butP1Val); 
+Serial.print(",");
+Serial.print(potP1Val);
+Serial.print(",");
+Serial.println(potP2Val);
+//printer dataen i konsollen hvilket er det 
+//processing læser fra
+
+delay(5);
+}
+
