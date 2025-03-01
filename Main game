@@ -1,0 +1,108 @@
+Car car;
+Obstical obstical;
+Background background;
+//variable til reset knappen
+int currentButVal;
+//variabler til score
+float timer, score, highscore;
+float scoreCount = score;
+
+void setup() {
+  size(500, 500);
+  background(255);
+  //objekter
+  car = new Car();
+  obstical = new Obstical();
+  background = new Background();
+  port = new Serial(this, "COM3", 9600);
+  port.bufferUntil('\n');
+}
+
+
+void draw() {
+  //den string den modtager fra arduinoen hedder receivedstring
+  while (port.available() > 0) {
+    receivedString = port.readStringUntil(end);
+  }
+  //den string bliver delt op i tre variabler, som bliver skilt ved hver komma
+  if (receivedString != null) {
+    String[] data = split(receivedString, ',');
+    //Assigner de forskellige dataer fra
+    //receivedString til vores variabler
+    int butP1Val = Integer.parseInt(data[0].trim());
+    int potP1Val = Integer.parseInt(data[1].trim());
+    int potP2Val = Integer.parseInt(data[2].trim());
+
+    println(butP1Val);
+    println(potP1Val);
+    println(potP2Val);
+    //det første potentiometer ændre på potisionen af den første bil
+    if  (car.running == 1) {
+      actualValueP1 = map(potP1Val, 0, 255, width/6, width/6*5);
+      car.x1 = actualValueP1;
+    }
+    //det andet potentiometer ændre på potisionen af den anden bil
+    if  (car.running == 1) {
+      actualValueP2 = map(potP2Val, 0, 255, width/6, width/6*5);
+      car.x2 = actualValueP2;
+    }
+    //knappen reseter spillet, ved at køre reset funktionerne på car, obstical og background objekterne,
+    //den gør timer variablet til det samme som millis(), hvilket reseter scoren.
+    //samt at gøre scoreCount til score, for at resete fart prograsionen
+    if (butP1Val == 0) {
+      background.reset();
+      obstical.reset();
+      car.reset();
+      timer = millis();
+      scoreCount = score;
+    }
+    //Baggrunden, bilerne og forhindringerne bliver lavet og deres billede filler loades
+    background.run();
+    car.car1();
+    car.car2();
+    obstical.spawnTrash();
+    //funktioner som tester om en bil har ramt et obstical, og stopper spillet.
+    hitDetection();
+    //funktion der laver scoren samt highscoren
+    score();
+  }
+}
+
+void score() {
+  int treshhold = 15000;
+  //her er scoren der er under hvert spil
+  if (car.running == 1) {
+    //millis() er et ur, der køre mens programmet køre, som tæller hvor lang tid programmet har kørt.
+    //ved at minuse millis med timer, starter den fra nul igen.
+    //fordi at i reset bliver timer = millis.
+    score = (millis()-timer)/1000;
+    //hvis spille køre i lang tid nok, bliver det hurtigere, med et interval af 15000.
+    //scoreCount tæller hvor langt spillet har kørt, og gør det hurtigere.
+    if (score-scoreCount > treshhold) {
+      obstical.mY ++;
+      background.mY ++;
+      scoreCount = scoreCount+treshhold;
+    }
+  }
+  //teksten på scoren for det actuelle spil
+  textSize(23);
+  fill(255, 255, 255);
+  text(score, width/6*5, height/10);
+  //teksten for highscoren der har være i alle spil
+  fill(255, 255, 255, 200);
+  text (highscore, width/6*4, height/10);
+}
+
+void hitDetection() {
+  //først bliver der testet om forhindringen er inden for begge billernes y værdiger.
+  if (obstical.hitboxY2 > height/4*3-height/24 && obstical.hitboxY1 < height/4*3+height/24) {
+    //derefter bliver der testet om forhindringen er inden for en af bilernes x værdig.
+    if ((obstical.hitboxX1 < car.hitbox1x2 && obstical.hitboxX2 > car.hitbox1x1) || (obstical.hitboxX1 < car.hitbox2x2 && obstical.hitboxX2 > car.hitbox2x1)) {
+      //hvis en bil bliver ramt, stopper spillet, med hit() funktionerne.
+      background.hit();
+      obstical.hit();
+      car.hit();
+      if (score > highscore) highscore = score;
+    }
+  }
+}
